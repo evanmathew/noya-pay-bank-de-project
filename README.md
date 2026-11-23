@@ -143,6 +143,7 @@ Lakehouse schemas: `bronze`, `validate`, `silver`, `gold`, `etl_audit_log`, `dq_
 <br>
 
 ## Layer by layer
+![layer_by_layer](/docs/layer_by_layer.png)
 
 ### Raw: `NB_RAW_TO_BRONZE`
 
