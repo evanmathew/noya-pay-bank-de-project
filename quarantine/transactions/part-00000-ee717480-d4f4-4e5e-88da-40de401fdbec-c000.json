@@ -1,0 +1,4 @@
+{"_corrupt_record":"{\"txn_id\": \"TXN000025256\", \"account_id\": \"ACC0000243\"","_source_file":"file:///home/reterro/evan/Project/NovaPay_Bank/novaPayBankProDir/raw/transactions/transactions_2025H1.json"}
+{"_corrupt_record":"{\"txn_id\": \"TXN000022499\", \"account_id\": \"ACC0002815\", \"txn_ts\": \"2025-06-22T15:26:08+0","_source_file":"file:///home/reterro/evan/Project/NovaPay_Bank/novaPayBankProDir/raw/transactions/transactions_2025H1.json"}
+{"_corrupt_record":"{\"txn_id\": \"TXN000040453\", \"account_id\": \"ACC0002716\", \"txn_ts\": ","_source_file":"file:///home/reterro/evan/Project/NovaPay_Bank/novaPayBankProDir/raw/transactions/transactions_2025H1.json"}
+{"_corrupt_record":"{\"txn_id\": \"TXN000016920\", \"account_id\": \"ACC0001339\", \"txn_ts\": \"2025-05-20T20:42:17+05:30\", \"amount\": 439.63, ","_source_file":"file:///home/reterro/evan/Project/NovaPay_Bank/novaPayBankProDir/raw/transactions/transactions_2025H1.json"}
