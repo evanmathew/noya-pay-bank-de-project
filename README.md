@@ -1,4 +1,4 @@
-# Bank Data Pipeline: Medallion Architecture on Microsoft Fabric
+# Noya Pay Bank Data Pipeline: Medallion Architecture on Microsoft Fabric
 
 From messy bank files to trusted, dashboard-ready analytics. A PySpark and Delta Lake pipeline in Microsoft Fabric that ingests raw files, cleans and validates them, applies business rules (FX, fraud and AML), and publishes gold tables and a star-schema fact table for reporting.
 
@@ -23,8 +23,7 @@ From messy bank files to trusted, dashboard-ready analytics. A PySpark and Delta
 10. [Gold layer and star schema](#gold-layer-and-star-schema)
 11. [Orchestration in Fabric](#orchestration-in-fabric)
 12. [Audit and monitoring](#audit-and-monitoring)
-13. [How to run it](#how-to-run-it)
-14. [Known issues and roadmap](#known-issues-and-roadmap)
+13. [Known issues and roadmap](#known-issues-and-roadmap)
 
 <br>
 
@@ -90,16 +89,22 @@ flowchart LR
 ```
 .
 ├── notebooks/
-│   ├── NB_FUNCTIONS.ipynb                      # shared helper functions
-│   ├── NB_RAW_TO_BRONZE.ipynb                  # raw ingestion + metadata + quarantine
-│   ├── NB_BRONZE_CUSTOMERS.ipynb
-│   ├── NB_BRONZE_ACCOUNTS.ipynb
-│   ├── NB_BRONZE_TRANSACTIONS.ipynb
-│   ├── NB_BRONZE_MERCHANTS.ipynb
-│   ├── NB_BRONZE_FX_RATES.ipynb
-│   ├── NB_Validation_DQ_Quarantine.ipynb       # DQ rules + routing to silver / quarantine
-│   ├── NB_SILVER_TRANSACTION_BUSINESS_RULE.ipynb  # FX, balances, fraud and AML
-│   └── NB_REQUESTED_ANALYTICS.ipynb            # gold tables per business request
+|   ├── Functions/
+│   |   ├── NB_FUNCTIONS.ipynb                      # shared helper functions
+|   ├── Raw/
+│   |    ├── NB_RAW_TO_BRONZE.ipynb                  # raw ingestion + metadata + quarantine
+|   ├── Bronze/
+│   |    ├── NB_BRONZE_CUSTOMERS.ipynb
+│   |    ├── NB_BRONZE_ACCOUNTS.ipynb
+│   |    ├── NB_BRONZE_TRANSACTIONS.ipynb
+│   |    ├── NB_BRONZE_MERCHANTS.ipynb
+│   |    ├── NB_BRONZE_FX_RATES.ipynb
+|   ├── Validate/
+│   |    ├── NB_Validation_DQ_Quarantine.ipynb       # DQ rules + routing to silver / quarantine
+|   ├── Silver/
+│   |    ├── NB_SILVER_TRANSACTION_BUSINESS_RULE.ipynb  # FX, balances, fraud and AML
+│   |    └── NB_REQUESTED_ANALYTICS.ipynb            # gold tables per business request
+├── data/
 ├── docs/                                       # carousel, screenshots
 └── README.md
 ```
@@ -114,7 +119,7 @@ Files/
 │   ├── merchants.json
 │   ├── fx_rates.csv
 │   ├── mcc_codes.csv
-│   └── Transactions/
+│   └── Transactions/transaction_*.json/
 └── quarantine/        # corrupt rows, schema drift and DQ rejections
 ```
 
@@ -312,8 +317,8 @@ Honest list of things I would fix next:
 - **Schema-drift handling:** a drifted batch is logged but still loaded. It should stop or quarantine properly.
 - **Idempotency:** re-running the same transactions file appends duplicates to the raw table.
 - **Small fixes:** wrong source name written for FX rates lineage, customer quarantine folder name mismatch in the audit log, and the orphan transaction check currently finds accounts without transactions.
-- **Next:** unit tests for the helper functions, Great Expectations style checks, and a Power BI dashboard on the star schema.
+- **Next:** unit tests for the helper functions, Great Expectations style checks.
 
 ## Author
 
-**Evee (Evan Saju Mathew)**: Data Engineer · [GitHub](https://github.com/evanmathew)
+**Evan Saju Mathew**: Data Engineer · [GitHub](https://github.com/evanmathew)
