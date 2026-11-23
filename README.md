@@ -73,6 +73,8 @@ flowchart LR
     V -. rejected rows .-> Q
 ```
 
+
+
 | Layer | What happens | Notebooks | Tables |
 |---|---|---|---|
 | **Raw** | Source files ingested as they are, with ingestion metadata. Corrupt rows quarantined | `NB_RAW_TO_BRONZE` | `bronze.bronze_*` |
@@ -272,7 +274,31 @@ All gold writes use Delta `MERGE` on a natural key, so reruns update rather than
 
 ## Orchestration in Fabric
 
-![Fabric pipeline](docs/images/pipeline.png)
+```mermaid
+flowchart LR
+    A["OneLake File Event Trigger<br/>New transaction file"] --> B["BATCH_ID<br/>Generate batch ID"]
+    A --> C["AS_OF<br/>Set processing date"]
+    B --> D["RAW_TO_BRONZE Notebook<br/>Read incoming file"]
+    D --> E["ForEach – Sequential<br/>5 Bronze Notebook IDs"]
+    C --> E
+    B --> E
+
+    E --> F["DQ Check and Validation Notebook<br/>Current BATCH_ID"]
+    F --> G["Silver Transaction Notebook<br/>Validate and Delta MERGE"]
+    G --> H["Requested Analytics Notebook"]
+
+    D -.-> I[("Bronze Delta Tables")]
+    E -.-> J[("Staging Tables")]
+    F -.-> K[("Quarantine + DQ Reports")]
+    G -.-> L[("Silver Delta Tables")]
+    H -.-> M[("Gold Analytics Tables")]
+
+    style A fill:#e8f1fc,stroke:#3976b9,color:#183b63
+    style G fill:#e4f4e9,stroke:#398653,color:#174b2b
+    style M fill:#fff0d9,stroke:#c58a30,color:#66420c
+    style K fill:#fce8e8,stroke:#c65a5a,color:#762b2b
+
+```
 
 | Step | Notebook | Layer |
 |---|---|---|
