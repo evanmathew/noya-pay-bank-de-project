@@ -1,5 +1,7 @@
 # Noya Pay Bank Data Pipeline: Medallion Architecture on Microsoft Fabric
 
+![Cover Banner](docs/noya-pay-github-banner.png)
+
 From messy bank files to trusted, dashboard-ready analytics. A PySpark and Delta Lake pipeline in Microsoft Fabric that ingests raw files, cleans and validates them, applies business rules (FX, fraud and AML), and publishes gold tables and a star-schema fact table for reporting.
 
 ![PySpark](https://img.shields.io/badge/PySpark-orange) ![Delta Lake](https://img.shields.io/badge/Delta_Lake-yellow) ![Microsoft Fabric](https://img.shields.io/badge/Microsoft_Fabric-black)
