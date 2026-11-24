@@ -149,7 +149,7 @@ Lakehouse schemas: `bronze`, `validate`, `silver`, `gold`, `etl_audit_log`, `dq_
 ## Layer by layer
 ![layer_by_layer](/docs/layer_by_layer.png)
 
-### Raw: `NB_RAW_TO_BRONZE`
+### Raw: [`NB_RAW_TO_BRONZE`](raw/NB_RAW_TO_BRONZE.ipynb)
 
 - Reads each source with an explicit schema (mostly strings, so nothing is lost to type errors) in `PERMISSIVE` mode with a `_corrupted_record` column.
 - Adds ingestion metadata: `_source_file`, `_source`, `_loaded_at`, `_batch_id`.
@@ -161,17 +161,19 @@ Lakehouse schemas: `bronze`, `validate`, `silver`, `gold`, `etl_audit_log`, `dq_
 
 | Notebook | What it does | Writes |
 |---|---|---|
-| **Customers** | Removes null tokens. Trims and fixes casing (names, email lower, PAN upper, IDs upper). Maps gender to M/F/O/U, country to IN, booleans to True/False. Parses four date formats, income and phone (strips +91 or 0, keeps 10 digits starting 6 to 9). Keeps the latest row per `customer_id`. Adds `full_name`, `age`, `tenure`, `email_domain`, `pan_holder_type`, `income_band` | `validate.bronze_clean_customers` (overwrite) |
-| **Accounts** | Maps account types (SB, CA, CC, FD) and currency symbols. Parses dates, credit limit and interest rate. Validates card numbers with the **Luhn** checksum, keeps only `card_last4`, drops the full number. Keeps the latest row per `account_id` | `validate.bronze_clean_accounts` (overwrite) |
-| **Transactions** | Maps renamed columns (schema drift). Maps debit/credit/refund codes, currencies and channels. Parses amounts and timestamps (epoch millis, ISO, naive values assumed IST) and derives `txn_date_ist`. **Flattens** nested columns. Derives `is_international`, `tag_count`, `tags_text`. Cleans merchant names and validates 4-digit MCCs. Drops exact duplicates, keeps the latest row per `txn_id`. Partitions by `txn_month` | `validate.bronze_clean_transactions` (append, partitioned) |
-| **Merchants** | Extracts `mcc` (zero-padded), `city`, `country` from nested structs. Removes `(old)` duplicates | `silver.silver_merchants` (overwrite) |
-| **FX rates** | Casts `rate_date` to date and `rate` to `decimal(18,6)`, nulls non-positive rates | `silver.silver_fx_rates` (overwrite) |
+| [**Customers**](bronze/NB_BRONZE_CUSTOMERS.ipynb) | Removes null tokens. Trims and fixes casing (names, email lower, PAN upper, IDs upper). Maps gender to M/F/O/U, country to IN, booleans to True/False. Parses four date formats, income and phone (strips +91 or 0, keeps 10 digits starting 6 to 9). Keeps the latest row per `customer_id`. Adds `full_name`, `age`, `tenure`, `email_domain`, `pan_holder_type`, `income_band` | `validate.bronze_clean_customers` (overwrite) |
+| [**Accounts**](bronze/NB_BRONZE_ACCOUNTS.ipynb) | Maps account types (SB, CA, CC, FD) and currency symbols. Parses dates, credit limit and interest rate. Validates card numbers with the **Luhn** checksum, keeps only `card_last4`, drops the full number. Keeps the latest row per `account_id` | `validate.bronze_clean_accounts` (overwrite) |
+| [**Transactions**](bronze/NB_BRONZE_TRANSACTIONS.ipynb) | Maps renamed columns (schema drift). Maps debit/credit/refund codes, currencies and channels. Parses amounts and timestamps (epoch millis, ISO, naive values assumed IST) and derives `txn_date_ist`. **Flattens** nested columns. Derives `is_international`, `tag_count`, `tags_text`. Cleans merchant names and validates 4-digit MCCs. Drops exact duplicates, keeps the latest row per `txn_id`. Partitions by `txn_month` | `validate.bronze_clean_transactions` (append, partitioned) |
+| [**Merchants**](bronze/NB_BRONZE_MERCHANTS.ipynb) | Extracts `mcc` (zero-padded), `city`, `country` from nested structs. Removes `(old)` duplicates | `silver.silver_merchants` (overwrite) |
+| [**FX rates**](bronze/NB_BRONZE_FX_RATES.ipynb) | Casts `rate_date` to date and `rate` to `decimal(18,6)`, nulls non-positive rates | `silver.silver_fx_rates` (overwrite) |
 
 Income bands: under 5 lakh is `MASS`, under 15 lakh `AFFLUENT`, under 50 lakh `HNI`, otherwise `ULTRA_HNI`. PAN holder type comes from the 4th character (`P` individual, `C` company).
 
 ### Silver: validation and enrichment
 
-`NB_Validation_DQ_Quarantine` applies the rules below and routes the data. `NB_SILVER_TRANSACTION_BUSINESS_RULE` enriches the validated transactions and writes `silver.silver_transaction_enriched` plus the fraud and balance tables.
+- [`NB_Validation_DQ_Quarantine`](validate/NB_Validation_DQ_Quarantine.ipynb) applies the rules below and routes the data. 
+- [`NB_SILVER_TRANSACTION_BUSINESS_RULE`](silver/NB_SILVER_TRANSACTION_BUSINESS_RULE.ipynb) enriches the validated transactions and writes 
+- `silver.silver_transaction_enriched` plus the fraud and balance tables.
 
 ### Gold
 
